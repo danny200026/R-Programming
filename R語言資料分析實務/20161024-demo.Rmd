@@ -1,0 +1,124 @@
+---
+title: "20161024-demo"
+author: "shouzo"
+date: "2016年10月24日"
+output: html_document
+---
+
+# STEP 1：準備要分析的資料
+* [網址] http://www.appledaily.com.tw/realtimenews/article/life/20161016/968938/
+
+
+
+
+# STEP 2：安裝和載入所需的套件
+* 問題排除：
+[install.packages fails in knitr document: “trying to use CRAN without setting a mirror”](http://stackoverflow.com/questions/33969024/install-packages-fails-in-knitr-document-trying-to-use-cran-without-setting-a)
+
+
+### 安裝套件(這一段不會被執行)
+```r
+install.packages("rvest")       # "網頁分析"用
+install.packages("jiebaR")      # "中文斷詞"用
+install.packages("tm")          # "文字探勘"用
+install.packages("wordcloud2")  # 產生"文字雲"用
+```
+
+
+### 安裝套件(這一段會被執行)
+```{r}
+# "網頁分析"用
+if(!require(rvest)) install.packages("rvest",repos = "http://cran.us.r-project.org")
+
+# "中文斷詞"用
+if(!require(jiebaR)) install.packages("jiebaR",repos = "http://cran.us.r-project.org")
+
+# "文字探勘"用
+if(!require(tm)) install.packages("tm",repos = "http://cran.us.r-project.org")
+
+# 產生"文字雲"用
+if(!require(wordcloud2)) install.packages("wordcloud2",repos = "http://cran.us.r-project.org")
+```
+
+
+
+
+### 載入套件
+```{r}
+library("rvest")
+library("jiebaR")
+library("tm")
+library("wordcloud2")
+```
+
+
+
+
+# STEP 3：進行"文字探勘"
+* 擷取網頁內容，將網頁下載後存入"source.page"物件
+```{r}
+source.page <- read_html("http://www.appledaily.com.tw/realtimenews/article/life/20161016/968938/")
+```
+
+* 利用 Xpath 取得文章內容
+```{r}
+source.content <- html_nodes(source.page, xpath = '//*[@id="summary"]')
+```
+
+* 取得並顯示 HTML 中的文字資料(此時文章仍包含多餘字元)
+```{r}
+content <- html_text(source.content)
+content
+```
+
+* 啟用 jiebaR 套件裡的斷詞引擎
+```{r}
+mixseg = worker()
+content.vec <- segment(code = content, jiebar = mixseg)
+
+space_tokenizer = function(x){
+  unlist(strsplit(as.character(x[[1]]), '[[:space:]]+'))
+}
+
+jieba_tokenizer = function(d){
+  unlist(segment(d[[1]], mixseg))
+}
+```
+
+* 撰寫 CNCorpus 副程式
+```{r}
+#### CNCorpus Function Start ####
+CNCorpus = function(d.vec){
+  
+  doc <- VCorpus(VectorSource(d.vec))
+  doc <- unlist(tm_map(doc ,jieba_tokenizer), recursive = F)
+  doc <- lapply(doc ,function(d)paste(d, collapse = ' '))
+  Corpus(VectorSource(doc))
+}
+#### CNCorpus Function END ####
+```
+
+
+
+
+# STEP 4：製作"字詞矩陣"
+```{r}
+content.corpus = CNCorpus(list(content.vec))    # 執行 CNCorpus 副程式
+content.corpus <- tm_map(content.corpus, removeNumbers)    # 移除數字
+
+control.list = list(wordLengths = c(2, Inf),tokenize = space_tokenizer)
+content.dtm <- DocumentTermMatrix(content.corpus, control = control.list)
+
+inspect(content.dtm)    # 檢查內容
+```
+
+
+
+
+# STEP 5：產生"文字雲"
+```{r}
+frequency <- colSums(as.matrix(content.dtm))
+frequency <- sort(frequency, decreasing = TRUE)[1:100]
+
+wordcloud2(as.table(frequency), fontFamily = '微软雅黑', shape = 'star')
+```
