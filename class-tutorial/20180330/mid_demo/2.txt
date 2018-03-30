@@ -1,0 +1,12 @@
+Among mining algorithms based on association rules, Apriori technique, mining frequent itermsets and interesting associations in transaction database, is not only the first used association rule mining technique but also the most popular one. After studying, it is found out that the traditional Apriori algorithms have two major bottlenecks: scanning the database frequently; generating a large number of candidate sets. Based on the inherent defects of Apriori algorithm, some related improvements are carried out: 1) using new database mapping way to avoid scanning the database repeatedly; 2) further pruning frequent itemsets and candidate itemsets in order to improve joining efficiency; 3) using overlap strategy to count support to achieve high efficiency. Under the same conditions, the results illustrate that the proposed improved Apriori algorithm improves the operating efficiency compared with other improved algorithms.
+
+Apriori algorithm uses prior knowledge of frequent itemset properties. Apriori employs
+an iterative approach known as a level-wise search, where k-itemsets are used
+to explore (k+1)-itemsets. First, the set of frequent 1-itemsets is found by scanning the
+database to accumulate the count for each item,and collecting those items that satisfy
+both min_sup and min_conf. The resulting set is denoted L1. Next,L1 is used to find
+L2,the set of frequent 2-itemsets,which is used to find L3,and so on, until no more
+frequent k-itemsets can be found. The founding of each Lk requires one full scan of the
+database. To improve the efficiency of the generation of frequent itemsets, an Apriori
+property that all nonempty subsets of a frequent itemset must also be frequent is used
+to reduce the search space. 

@@ -1,0 +1,25 @@
+Association Rule Mining [1] is proposed by R.Agrawal, et al. first of all in 1993,
+which has become an important data mining task and a focused theme in data mining
+research. Association Rule Mining leads to the discovery of associations and correlations
+among items in large transactional or relational data sets and the discovery of
+interesting and valuable correlation relationship among huge amounts of transaction
+records. The object of Association Rule Mining is to find the rule that the occurrence
+of one event can lead to another incident happened. The APriori[2] algorithm is the
+most classic association rule mining algorithm. APriori is a seminal algorithm proposed
+by R.Agrawal and R.Srikant in 1994 for mining frequent itemsets for Boolean
+association rules. As we have seen, the APriori significantly reduces the size of candidate
+sets leading to good performance gain. However, it also suffers from two nontrivial
+costs: it may need to generate a huge number of candidate sets and it may need
+to repeatedly scan the database and check a large set of candidates by pattern matching.
+Many variations of APriori algorithm have been proposed that focus on
+improving the efficiency of the original algorithm. Several of these variations are
+summarized as follows: Hash-based algorithm, Transaction-reduction-based algorithm
+[5], Partitioning-based algorithm [6], sampling-based algorithm, dynamic- itemset-counting-based
+algorithm, array-based algorithm, and so on. But there are many
+deficiencies: the different itemset and different item of itemset are referred as the
+same in the variations of APriori algorithm, in fact, they are different. So, this paper
+puts forward a kind of improved algorithm. Through scanning database only once, all
+transactions are transformed to be components of array, and the algorithm becomes
+more practical by introducing weight .At the same time, the unnecessary data is deleted
+in time, the steps of join and prune become simple, and the efficiency of Apriori
+algorithm is improved.
